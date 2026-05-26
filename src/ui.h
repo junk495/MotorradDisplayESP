@@ -4,22 +4,7 @@
 #include <Arduino.h>
 #include <TFT_eSPI.h>
 
-// Unser neuer Display Treiber
-TFT_eSPI tft = TFT_eSPI();
-
-// Ein Dummy, damit alte Aufrufe aus main.cpp und config.h keinen Fehler werfen
-class OldLcdWrapper {
-  public:
-	void setBrightness(uint8_t b) {
-		analogWrite(1, b);
-	}
-
-	void setOffset(int x, int y) {
-		// Dummy
-	}
-};
-
-OldLcdWrapper lcd;
+#include "display.h"
 
 #define LV_LVGL_H_INCLUDE_SIMPLE
 #include "config.h"
@@ -482,23 +467,33 @@ namespace Data {
 		if (length > sizeof(details::iconBitmapBuffer)) {
 			Serial.println("Error: Icon buffer overflow");
 		} else {
-			convert1BitBitmapToRgb565(details::iconRenderBuffer, value, 64, 64, 0x001F, 0xFFFF);
+			convert1BitBitmapToRgb565(details::iconRenderBuffer, value, 64, 62, 0x001F, 0xFFFF);
 			details::iconDirty = true;
 		}
 	}
 
 	void removeAllFiles() {
-		File root = FS.open("/");
+		File root = FS.open("/", "r");
 		File file = root.openNextFile();
 
 		while (file) {
-			FS.remove(file.path());
+			String path = file.path();
+			file.close();
+			FS.remove(path);
+			root = FS.open("/", "r");
 			file = root.openNextFile();
 		}
+		if (file)
+			file.close();
+		if (root)
+			root.close();
 	}
 
 	void listFiles() {
-		File root = FS.open("/");
+		File root = FS.open("/", "r");
+		if (!root)
+			return;
+
 		File file = root.openNextFile();
 
 		details::availableIcons.clear();
@@ -507,18 +502,21 @@ namespace Data {
 			String name = file.name();
 			String hash = name.substring(0, name.length() - 4);
 			details::availableIcons.push_back(hash);
+			file.close();
 			file = root.openNextFile();
 		}
+		root.close();
 	}
 
 	size_t readFile(const String& filename, uint8_t* buffer, const size_t bufferSize) {
 		File file = FS.open(filename, FILE_READ);
 
-		if (!file && !file.isDirectory()) {
+		if (!file || file.isDirectory()) {
 			return 0;
 		}
 
 		if (file.size() > bufferSize) {
+			file.close();
 			return 0;
 		}
 
