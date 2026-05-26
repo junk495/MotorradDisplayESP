@@ -32,8 +32,9 @@
 #endif
 
 // Moderner LVGL 9 Puffer mit zwingender Speicherausrichtung
-#define DRAW_BUF_SIZE (SCREEN_WIDTH * SCREEN_HEIGHT / 10)
-__attribute__((aligned(8))) uint8_t draw_buf_0[DRAW_BUF_SIZE * 2];
+#define DRAW_BUF_SIZE (SCREEN_WIDTH * SCREEN_HEIGHT)               // number of pixels
+__attribute__((aligned(8))) uint8_t draw_buf_0[DRAW_BUF_SIZE * 2]; // 2 bytes per pixel (RGB565)
+__attribute__((aligned(8))) uint8_t draw_buf_1[DRAW_BUF_SIZE * 2];
 
 #if LV_USE_LOG != 0
 void my_print(lv_log_level_t level, const char* buf) {
@@ -93,6 +94,13 @@ namespace UI {
 		Serial.println("UI::init() start");
 
 		Serial.println("tft.begin()...");
+#if defined(PIN_BACKLIGHT) && (PIN_BACKLIGHT >= 0) && (PIN_BACKLIGHT <= 45) && !(PIN_BACKLIGHT == 0) && \
+!(PIN_BACKLIGHT == 1) && !(PIN_BACKLIGHT == 3) && !(PIN_BACKLIGHT == 4) && !(PIN_BACKLIGHT == 5)
+		pinMode(PIN_BACKLIGHT, OUTPUT);
+		digitalWrite(PIN_BACKLIGHT, HIGH); // turn on backlight
+#else
+		Serial.println("Backlight pin not valid – skipping backlight init");
+#endif
 		tft.begin();
 #ifdef HORIZONTAL
 		tft.setRotation(1);
@@ -125,7 +133,7 @@ namespace UI {
 		lv_display_set_flush_cb(disp, my_disp_flush);
 
 		Serial.println("lv_display_set_buffers()...");
-		lv_display_set_buffers(disp, draw_buf_0, nullptr, sizeof(draw_buf_0), LV_DISPLAY_RENDER_MODE_PARTIAL);
+		lv_display_set_buffers(disp, draw_buf_0, draw_buf_1, sizeof(draw_buf_0), LV_DISPLAY_RENDER_MODE_PARTIAL);
 		Serial.println("lv_display_set_buffers() done");
 
 		Serial.println("lv_screen_active()...");
