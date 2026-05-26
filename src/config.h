@@ -9,7 +9,7 @@
 #define PIN_LCD_CS    14
 #define PIN_LCD_DC    15
 #define PIN_LCD_RST   21
-#define PIN_BACKLIGHT 22
+#define PIN_BACKLIGHT 45 // Waveshare ESP32‑S3‑Touch‑LCD‑2 backlight pin
 
 #define HORIZONTAL
 
