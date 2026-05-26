@@ -2,13 +2,14 @@
 #define SCHEDULER_H
 
 #include "config.h"
+#include <Arduino.h>
 
 #define SCHEDULER_GUARD(__current__, __var__) \
 	if (__var__ > __current__)                \
 	__var__ = __current__
 #define SCHEDULER_CREATE(__name__) static uint32_t __name__ = 0
 
-#define TOKENPASTE(x, y) x##y
+#define TOKENPASTE(x, y)  x##y
 #define TOKENPASTE2(x, y) TOKENPASTE(x, y)
 #define DO_EVERY(duration)                               \
 	SCHEDULER_CREATE(TOKENPASTE2(scheduler_, __LINE__)); \

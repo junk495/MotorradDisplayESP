@@ -540,10 +540,6 @@
             ],
             "cStandard": "gnu99",
             "cppStandard": "gnu++11",
-            "forcedInclude": [
-                "C:/Users/erich/.platformio/packages/framework-arduinoespressif32/cores/esp32/Arduino.h",
-                ""
-            ],
             "compilerPath": "C:/Users/erich/.platformio/packages/toolchain-xtensa-esp32s3/bin/xtensa-esp32s3-elf-gcc.exe",
             "compilerArgs": [
                 "-mlongcalls",
