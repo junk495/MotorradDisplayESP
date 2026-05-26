@@ -7,7 +7,9 @@
 #ifndef LV_CONF_H
 #define LV_CONF_H
 
+#ifndef __ASSEMBLER__
 #include <stdint.h>
+#endif
 
 /*====================
    COLOR SETTINGS
@@ -47,7 +49,9 @@
 /* * WICHTIG: Die Aktivierung der Schriften (LV_FONT_MONTSERRAT_24, etc.)
  * erfolgt EXKLUSIV über die platformio.ini, um Konflikte zu vermeiden!
  */
+#ifndef __ASSEMBLER__
 #define LV_FONT_DEFAULT &lv_font_montserrat_14
+#endif
 
 #define LV_USE_FONT_COMPRESSED  0
 #define LV_USE_FONT_PLACEHOLDER 1
@@ -75,5 +79,12 @@
 #define LV_THEME_DEFAULT_GROW            1
 #define LV_THEME_DEFAULT_TRANSITION_TIME 80
 #endif
+
+/*==================
+ * OPTIMIZATIONS (ESP32-S3 Specific)
+ *==================*/
+#define LV_USE_DRAW_SW_HELIUM 0
+#define LV_USE_DRAW_SW_NEON   0
+#define LV_USE_DRAW_SW_CUSTOM 0
 
 #endif /*LV_CONF_H*/
