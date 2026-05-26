@@ -6,6 +6,7 @@
  */
 
 #include "display.h"
+#include "config.h"
 #include <Arduino.h>
 #include <TFT_eSPI.h>
 
@@ -17,16 +18,17 @@ OldLcdWrapper lcd;
 
 // Implementation of OldLcdWrapper methods
 void OldLcdWrapper::setBrightness(uint8_t b) {
-	// TFT_eSPI verwendet digitalWrite für Backlight
-	// Pin 1 ist typisch für ESP32-S3 Display Boards
-	pinMode(1, OUTPUT);
+#if defined(PIN_BACKLIGHT) && (PIN_BACKLIGHT >= 0) && (PIN_BACKLIGHT <= 45) && !(PIN_BACKLIGHT == 0) && \
+!(PIN_BACKLIGHT == 1) && !(PIN_BACKLIGHT == 3) && !(PIN_BACKLIGHT == 4) && !(PIN_BACKLIGHT == 5)
+	pinMode(PIN_BACKLIGHT, OUTPUT);
 	if (b == 0) {
-		digitalWrite(1, LOW);
+		digitalWrite(PIN_BACKLIGHT, LOW);
 	} else {
-		digitalWrite(1, HIGH);
-		// Für PWM-Helligkeit müsstest du ledcWrite verwenden
-		// Aber ST7789 hat oft nur On/Off
+		digitalWrite(PIN_BACKLIGHT, HIGH);
 	}
+#else
+	Serial.println("setBrightness: Backlight pin not valid – skipping");
+#endif
 }
 
 void OldLcdWrapper::setOffset(int x, int y) {
