@@ -19,6 +19,7 @@ OldLcdWrapper lcd;
 void OldLcdWrapper::setBrightness(uint8_t b) {
 	// TFT_eSPI verwendet digitalWrite für Backlight
 	// Pin 1 ist typisch für ESP32-S3 Display Boards
+	pinMode(1, OUTPUT);
 	if (b == 0) {
 		digitalWrite(1, LOW);
 	} else {

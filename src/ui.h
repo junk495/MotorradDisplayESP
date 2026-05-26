@@ -90,7 +90,9 @@ namespace UI {
 
 	void init() {
 		using namespace details;
+		Serial.println("UI::init() start");
 
+		Serial.println("tft.begin()...");
 		tft.begin();
 #ifdef HORIZONTAL
 		tft.setRotation(1);
@@ -98,9 +100,12 @@ namespace UI {
 		tft.setRotation(0);
 #endif
 		tft.fillScreen(TFT_BLACK);
+		Serial.println("tft.begin() done");
 
+		Serial.println("lv_init()...");
 		lv_init();
 		lv_tick_set_cb(my_tick);
+		Serial.println("lv_init() done");
 
 		delay(100);
 
@@ -108,36 +113,71 @@ namespace UI {
 		lv_log_register_print_cb(my_print);
 #endif
 
+		Serial.println("lv_display_create()...");
 		lv_display_t* disp = lv_display_create(SCREEN_WIDTH, SCREEN_HEIGHT);
+		if (!disp) {
+			Serial.println("Error creating LVGL display!");
+			return;
+		}
+		Serial.println("lv_display_create() done");
+
+		lv_display_set_default(disp);
 		lv_display_set_flush_cb(disp, my_disp_flush);
+
+		Serial.println("lv_display_set_buffers()...");
 		lv_display_set_buffers(disp, draw_buf_0, nullptr, sizeof(draw_buf_0), LV_DISPLAY_RENDER_MODE_PARTIAL);
+		Serial.println("lv_display_set_buffers() done");
 
-		lv_obj_set_style_bg_color(lv_screen_active(), lv_color_make(0xFF, 0xFF, 0xFF), LV_PART_MAIN);
+		Serial.println("lv_screen_active()...");
+		lv_obj_t* screen = lv_screen_active();
+		if (!screen) {
+			Serial.println("Error: No active screen!");
+			return;
+		}
+		Serial.println("lv_screen_active() done");
 
-		imgTbtIcon = lv_image_create(lv_screen_active());
+		Serial.println("lv_obj_set_style_bg_color()...");
+		lv_obj_set_style_bg_color(screen, lv_color_make(0xFF, 0xFF, 0xFF), LV_PART_MAIN);
+		Serial.println("lv_obj_set_style_bg_color() done");
+
+		Serial.println("imgTbtIcon = lv_image_create()...");
+		imgTbtIcon = lv_image_create(screen);
 		lv_obj_set_style_bg_color(imgTbtIcon, lv_color_make(0xFF, 0xFF, 0xFF), LV_PART_MAIN);
+		Serial.println("imgTbtIcon done");
 
-		lblSpeed = lv_label_create(lv_screen_active());
+		Serial.println("lblSpeed = lv_label_create()...");
+		lblSpeed = lv_label_create(screen);
 		lv_label_set_text(lblSpeed, "0");
 		lv_obj_set_style_text_color(lblSpeed, lv_color_make(0xFF, 0x00, 0x00), LV_PART_MAIN);
+		Serial.println("lblSpeed done");
 
-		lblSpeedUnit = lv_label_create(lv_screen_active());
+		Serial.println("lblSpeedUnit = lv_label_create()...");
+		lblSpeedUnit = lv_label_create(screen);
 		lv_label_set_text(lblSpeedUnit, "km/h");
+		Serial.println("lblSpeedUnit done");
 
-		lblDistanceToNextRoad = lv_label_create(lv_screen_active());
+		Serial.println("lblDistanceToNextRoad = lv_label_create()...");
+		lblDistanceToNextRoad = lv_label_create(screen);
 		lv_label_set_text(lblDistanceToNextRoad, "CatDrive");
 		lv_obj_set_style_text_color(lblDistanceToNextRoad, lv_color_make(0x00, 0x00, 0xff), LV_PART_MAIN);
+		Serial.println("lblDistanceToNextRoad done");
 
-		lblNextRoad = lv_label_create(lv_screen_active());
+		Serial.println("lblNextRoad = lv_label_create()...");
+		lblNextRoad = lv_label_create(screen);
 		lv_label_set_text(lblNextRoad, "welcome!");
+		Serial.println("lblNextRoad done");
 
-		lblNextRoadDesc = lv_label_create(lv_screen_active());
+		Serial.println("lblNextRoadDesc = lv_label_create()...");
+		lblNextRoadDesc = lv_label_create(screen);
 		lv_label_set_text(lblNextRoadDesc, "");
 		lv_obj_set_style_text_color(lblNextRoadDesc, lv_color_make(0x55, 0x55, 0x55), LV_PART_MAIN);
+		Serial.println("lblNextRoadDesc done");
 
-		lblEta = lv_label_create(lv_screen_active());
+		Serial.println("lblEta = lv_label_create()...");
+		lblEta = lv_label_create(screen);
 		lv_label_set_text(lblEta, "");
 		lv_obj_set_style_text_color(lblEta, lv_color_make(0x55, 0x55, 0x55), LV_PART_MAIN);
+		Serial.println("lblEta done");
 
 #ifdef HORIZONTAL
 #define LEFT_PART_WIDTH  (SCREEN_HEIGHT / 2 - 12)
